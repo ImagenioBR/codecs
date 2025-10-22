@@ -10,7 +10,7 @@
     "lerna": "^9.0.0"
   },
   "engines": {
-    "node": ">=0.14"
+    "node": ">=22.21.0"
   },
   "scripts": {
     "build:all": "npx lerna@9.0.0 run build:ci --parallel --stream",

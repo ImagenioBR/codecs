@@ -10,7 +10,7 @@
     "test": "test"
   },
   "engines": {
-    "node": ">=0.14"
+    "node": ">=22.21.0"
   },
   "files": [
     "package.json",
