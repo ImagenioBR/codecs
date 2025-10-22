@@ -1,11 +1,17 @@
 {
-  "version": "independent",
-  "packages": ["packages/*"],
+  "version": "3.0.0",
+  "packages": [
+    "packages/*"
+  ],
   "npmClient": "yarn",
-  "useWorkspaces": true,
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
+      "ignoreChanges": [
+        "*.md",
+        "*.yml",
+        "*.spec.js",
+        "*.test.js"
+      ],
       "message": "chore(release): publish"
     },
     "version": {
@@ -15,5 +21,6 @@
       "yes": true,
       "message": "chore(release): publish [skip ci]"
     }
-  }
+  },
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
