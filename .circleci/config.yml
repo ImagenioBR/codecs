@@ -167,12 +167,12 @@ jobs:
       - run:
           name: Install Dependencies
           command: yarn install --frozen-lockfile
-      - run: yarn run build:publish
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+      # - run: yarn run build:publish
+      # - save_cache:
+      #     name: Save Yarn Package Cache
+      #     paths:
+      #       - ~/.cache/yarn
+      #     key: yarn-packages-{{ checksum "yarn.lock" }}
       #
       # This step is a prerequisite for `lerna version`
       # The git config values need to match the personal access token set
@@ -200,19 +200,53 @@ jobs:
           name: Verify NPM authentication
           command: npm whoami
       #
+      # TEST VERSIONING - Dry run to verify lerna versioning works correctly
+      # This will check what packages would be versioned without making any changes
+      - run:
+          name: Check which packages have changed
+          command: |
+            echo "================================================"
+            echo "Checking for changed packages since last release..."
+            echo "================================================"
+            npx lerna changed || echo "No changes detected (this is normal if no commits since last tag)"
+      #
+      # TEST VERSIONING - Show what the next version would be
+      - run:
+          name: Test version command (dry-run, no commits/pushes)
+          command: |
+            echo "================================================"
+            echo "Testing lerna version (no-push, no-git-tag-version)..."
+            echo "================================================"
+            npx lerna version --no-push --no-git-tag-version --yes || echo "Version command completed"
+      #
+      # Log the current versions to verify
+      - run:
+          name: Display package versions
+          command: |
+            echo "================================================"
+            echo "Current package versions:"
+            echo "================================================"
+            for pkg in packages/*/package.json; do
+              name=$(node -p "require('./$pkg').name")
+              version=$(node -p "require('./$pkg').version")
+              echo "$name: $version"
+            done
+      #
+      # PUBLISH SECTION - COMMENTED OUT FOR TESTING
       # This step is configured in `/lerna.json`.
       # Only runs on `main` branch. Walks all commits since last tagged release.
       # Determines, based on commit syntax and files changed, what each packages new
       # version should be. Creates a commit to update all updated package versions.
       # Pushes commit to main, cuts GitHub release w/ changelog.
       # @see https://github.com/lerna/lerna/tree/main/commands/version
-      - run: npx lerna version
+      # - run: npx lerna version
       #
+      # PUBLISH SECTION - COMMENTED OUT FOR TESTING
       # This step is configured in `/lerna.json`.
       # Checks package versions and publishes packages where the latest version is not
       # present in the registry. This command ignores changes to files w/ specific extensions.
       # @see https://github.com/lerna/lerna/tree/main/commands/publish
-      - run: npx lerna publish from-package
+      # - run: npx lerna publish from-package
 
 workflows:
   version: 2
