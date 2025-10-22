@@ -171,7 +171,7 @@ Returns:
 ## setConfig
 
 function that set up dicom-codec configuration properties
-Parameters (**It does not mutate any param**):
+Parameters (**It does not mutate any param** ):
 - options - Object
     - verbose - Boolean true if dicom-codec should be verbose, false otherwise.
 
