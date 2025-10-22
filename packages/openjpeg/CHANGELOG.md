@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://localhost/compare/@cornerstonejs/codec-openjpeg@1.2.4...@cornerstonejs/codec-openjpeg@1.3.0) (2025-10-22)
+
+
+### Bug Fixes
+
+* **jpeg:** try to publish ([#45](https://localhost/issues/45)) ([5c2187e](https://localhost/commits/5c2187e62c1b1d30f37ce3aa3126e39732159f92))
+
+
+### Features
+
+* **jpeg2000:** Add 16-bit RGB support to JPEG2000 decoder ([#53](https://localhost/issues/53)) ([54ea179](https://localhost/commits/54ea17956bdcff6baf56c92f5578fdd1a41e2536))
+
+
+
+
+
 ## [1.2.4](https://localhost/compare/@cornerstonejs/codec-openjpeg@1.2.3...@cornerstonejs/codec-openjpeg@1.2.4) (2024-03-25)
 
 
