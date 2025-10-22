@@ -26,7 +26,7 @@ executors:
           USER_GID: 1000 # $USER_UID
   node:
     docker:
-      - image: cimg/node:18.20.3
+      - image: cimg/node:22.21.0
         environment:
           TERM: xterm # Enable colors in term
   # Custom executor to override Cypress config
