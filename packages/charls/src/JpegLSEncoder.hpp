@@ -82,6 +82,18 @@ class JpegLSEncoder {
   /// above
   /// </summary>
   void encode() {
+        // === BEGIN FAKE_REGRESSION ===
+        // Artificial CPU burn so the benchmark pipeline has a known regression
+        // to detect. Remove this entire block before merging.
+        {
+          volatile double burn = 0.0;
+          for (int i = 0; i < 1000000; ++i) {
+            burn = (burn + static_cast<double>(i)) * 1.0000001;
+          }
+          (void)burn;
+        }
+        // === END FAKE_REGRESSION ===
+
         charls::jpegls_encoder encoder;
         encoder.near_lossless(nearLossless_);
         encoder.frame_info({frameInfo_.width, frameInfo_.height, frameInfo_.bitsPerSample, frameInfo_.componentCount})

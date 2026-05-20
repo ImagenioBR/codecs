@@ -16,6 +16,16 @@ function swap16(val) {
  * @param {*} pixelData 
  */
 function decode(imageFrame, pixelData) {
+  // === BEGIN FAKE_REGRESSION ===
+  // Artificial CPU burn so the benchmark pipeline has a known regression to
+  // detect. Remove this entire block before merging.
+  let _burn = 0;
+  for (let i = 0; i < 100000; i++) {
+    _burn = (_burn + i) * 1.0000001;
+  }
+  globalThis.__fakeRegressionBurn = _burn;
+  // === END FAKE_REGRESSION ===
+
   if (imageFrame.bitsAllocated === 16) {
     let arrayBuffer = pixelData.buffer;
 

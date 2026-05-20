@@ -148,6 +148,18 @@ public:
   /// </summary>
   void decode()
   {
+    // === BEGIN FAKE_REGRESSION ===
+    // Artificial CPU burn so the benchmark pipeline has a known regression to
+    // detect. Remove this entire block before merging.
+    {
+      volatile double burn = 0.0;
+      for (int i = 0; i < 1000000; ++i) {
+        burn = (burn + static_cast<double>(i)) * 1.0000001;
+      }
+      (void)burn;
+    }
+    // === END FAKE_REGRESSION ===
+
     ojph::codestream codestream;
     ojph::mem_infile mem_file;
     mem_file.open(pEncoded_->data(), pEncoded_->size());

@@ -87,6 +87,18 @@ class JPEGDecoder {
   /// method, see getEncodedBuffer() and getEncodedBytes() above.
   /// </summary>
   void decode() {
+    // === BEGIN FAKE_REGRESSION ===
+    // Artificial CPU burn so the benchmark pipeline has a known regression to
+    // detect. Remove this entire block before merging.
+    {
+      volatile double burn = 0.0;
+      for (int i = 0; i < 1000000; ++i) {
+        burn = (burn + static_cast<double>(i)) * 1.0000001;
+      }
+      (void)burn;
+    }
+    // === END FAKE_REGRESSION ===
+
     // tjhandle tjInstance = NULL;
     // if ((tjInstance = tjInitDecompress()) == NULL) {
     //     throw("initializing decompressor\n");
