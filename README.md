@@ -1,5 +1,7 @@
 # codecs
 
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/cornerstonejs/codecs?utm_source=badge)
+
 ## Packages
 
 This repository is maintained as a monorepo. This means that this repository, instead of containing a single project, contains many projects. If you explore our project structure, you'll see the following:
@@ -59,7 +61,7 @@ Transfer Syntax is the language used in DICOM to describe the DICOM file format 
 
 - \* - 1.2.840.10008.1.2.4.50: 8-bit RGB can leverage the browser's built in decoder.
 - \*\* - 1.2.840.10008.1.2.4.\[92|93\]: Not supported in previous image loaders; OpenJPEG may work with these
-- \*\*\* - Unlike all other DICOM transfer syntaxes, the deflate transfer syntaxes compress the whole of the DICOM data (tags, lengths, VR etc.) rather than just the pixel data - this is done using the standard “deflate” mechanism as used in gzip etc.) It is therefore most suitable for non-pixel objects such as structured reports, presentation states etc.
+- \*\*\* - Unlike all other DICOM transfer syntaxes, the deflate transfer syntaxes compress the whole of the DICOM data (tags, lengths, VR etc.) rather than just the pixel data - this is done using the standard "deflate" mechanism as used in gzip etc.) It is therefore most suitable for non-pixel objects such as structured reports, presentation states etc.
 
 - 5: [JS Decoder](https://github.com/cornerstonejs/cornerstoneWADOImageLoader/blob/4bfa04759412d58647cc5d6bd0204aa37e4542e3/src/shared/decoders/decodeRLE.js)
 - 57 & 70: [JS Decoder](https://github.com/cornerstonejs/cornerstoneWADOImageLoader/blob/4bfa04759412d58647cc5d6bd0204aa37e4542e3/codecs/jpegLossless.js)
