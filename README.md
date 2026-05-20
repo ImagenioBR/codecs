@@ -1,5 +1,7 @@
 # codecs
 
+[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/cornerstonejs/codecs?utm_source=badge)
+
 ## Packages
 
 This repository is maintained as a monorepo. This means that this repository, instead of containing a single project, contains many projects. If you explore our project structure, you'll see the following:
@@ -92,6 +94,32 @@ You can read more about the specific lerna features we're using here:
 You can read more about semantic commit messages here:
 
 - Semantic commits
+
+### Benchmarking
+
+Per-PR performance regression detection runs on CodSpeed via
+[`.github/workflows/pr-checks.yml`](.github/workflows/pr-checks.yml)
+(`codspeed-bench` job). Bench sources live under
+`packages/*/bench/*.bench.js` and are driven by `vitest bench`.
+
+We run CodSpeed in `mode: simulation` (Cachegrind, not wall-clock), so
+the numbers on the dashboard are **modeled instruction time on a
+reference CPU** — deterministic and ideal for catching regressions, but
+not honest wall-clock that a user's browser would see. JS-heavy loops
+inflate 30–100× vs production V8 (no JIT under Cachegrind); wasm decode
+kernels inflate ~5–15×.
+
+Each wasm codec package has three kinds of benches:
+
+- `instantiate+destroy X` — pure constructor/destructor lifecycle cost
+- `decode X — cold` — first decode call on a fresh decoder instance
+- `decode X — warm` — Nth decode call on a decoder pre-warmed with 5
+  untimed iterations at module load (mirrors cornerstone3D's
+  `local.decoder` caching pattern)
+
+See [`BENCHMARKING.md`](BENCHMARKING.md) for the full measurement model,
+why simulation was chosen over walltime, how to read each bench type,
+what the CodSpeed warnings mean, and how to add new benches.
 
 ### Codec Package Anatomy
 

@@ -9,7 +9,10 @@
   "scripts": {
     "build": "echo 'Nothing to build' && exit 0",
     "build:ci": "yarn run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:ci": "yarn run test",
+    "test:watch": "vitest",
+    "bench": "vitest bench --run"
   },
   "engines": {
     "node": ">=0.14"

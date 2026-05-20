@@ -18,12 +18,17 @@
     "./wasmjs": "./dist/openjphjs.js"
   },
   "scripts": {
+    "test": "vitest run",
+    "test:ci": "yarn run test",
+    "test:watch": "vitest",
+    "test:benchmark": "cd test/node; node index.js",
     "build": "bash build.sh",
     "build:ci": "yarn run build",
     "build:ui": "webpack --config ./.webpack/webpack.config.js",
     "start": " webpack-dev-server --config ./.webpack/webpack.config.js",
     "prepublishOnly": "bash build.sh",
-    "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt"
+    "postpublish": "node -p -e \"require('./package.json').version\" > success_version.txt",
+    "bench": "vitest bench --run"
   },
   "files": [
     "package.json",
