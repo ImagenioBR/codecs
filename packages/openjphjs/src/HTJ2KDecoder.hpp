@@ -118,10 +118,17 @@ public:
   /// </summary>
   void readHeader()
   {
-    ojph::codestream codestream;
-    ojph::mem_infile mem_file;
-    mem_file.open(pEncoded_->data(), pEncoded_->size());
-    readHeader_(codestream, mem_file);
+    try
+    {
+      ojph::codestream codestream;
+      ojph::mem_infile mem_file;
+      mem_file.open(pEncoded_->data(), pEncoded_->size());
+      readHeader_(codestream, mem_file);
+    }
+    catch (const std::exception &e)
+    {
+      OJPH_INFO(0x00010020, "readHeader failed: %s", e.what());
+    }
   }
 
   /// <summary>
@@ -148,11 +155,18 @@ public:
   /// </summary>
   void decode()
   {
-    ojph::codestream codestream;
-    ojph::mem_infile mem_file;
-    mem_file.open(pEncoded_->data(), pEncoded_->size());
-    readHeader_(codestream, mem_file);
-    decode_(codestream, frameInfo_, 0);
+    try
+    {
+      ojph::codestream codestream;
+      ojph::mem_infile mem_file;
+      mem_file.open(pEncoded_->data(), pEncoded_->size());
+      readHeader_(codestream, mem_file);
+      decode_(codestream, frameInfo_, 0);
+    }
+    catch (const std::exception &e)
+    {
+      OJPH_INFO(0x00010021, "decode failed (likely truncated stream): %s", e.what());
+    }
   }
 
   /// <summary>
@@ -163,11 +177,18 @@ public:
   /// </summary>
   void decodeSubResolution(size_t decompositionLevel)
   {
-    ojph::codestream codestream;
-    ojph::mem_infile mem_file;
-    mem_file.open(pEncoded_->data(), pEncoded_->size());
-    readHeader_(codestream, mem_file);
-    decode_(codestream, frameInfo_, decompositionLevel);
+    try
+    {
+      ojph::codestream codestream;
+      ojph::mem_infile mem_file;
+      mem_file.open(pEncoded_->data(), pEncoded_->size());
+      readHeader_(codestream, mem_file);
+      decode_(codestream, frameInfo_, decompositionLevel);
+    }
+    catch (const std::exception &e)
+    {
+      OJPH_INFO(0x00010022, "decodeSubResolution failed: %s", e.what());
+    }
   }
 
   /// <summary>

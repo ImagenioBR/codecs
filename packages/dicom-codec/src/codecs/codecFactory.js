@@ -249,11 +249,20 @@ function encode(context, codecConfig, imageFrame, imageInfo, options = {}) {
  * @returns Object containing decoded image frame and imageInfo (current) data
  *
  */
-function decode(context, codecConfig, imageFrame, imageInfo) {
+function decode(context, codecConfig, imageFrame, imageInfo, options = {}) {
   if (!imageFrame?.length) {
     throw new Error("Image frame not defined for decoding");
   }
-  const decoderInstance = new codecConfig.Decoder();
+  const reuseDecoder = options.reuseDecoder === true;
+  let decoderInstance;
+  if (reuseDecoder) {
+    if (!codecConfig.reusedDecoder) {
+      codecConfig.reusedDecoder = new codecConfig.Decoder();
+    }
+    decoderInstance = codecConfig.reusedDecoder;
+  } else {
+    decoderInstance = new codecConfig.Decoder();
+  }
 
   const { length } = imageFrame;
   // get pointer to the source/encoded bit stream buffer in WASM memory
@@ -277,8 +286,9 @@ function decode(context, codecConfig, imageFrame, imageInfo) {
   // get information about the decoded image
   const decodedImageInfo = decoderInstance.getFrameInfo();
 
-  // cleanup allocated memory
-  decoderInstance.delete();
+  if (!reuseDecoder) {
+    decoderInstance.delete();
+  }
 
   const processInfo = {
     duration: context.timer.getDuration(),

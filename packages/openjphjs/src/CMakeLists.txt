@@ -1,7 +1,12 @@
 
 add_executable(openjphjs jslib.cpp)
 
-target_link_libraries(openjphjs PRIVATE openjphsimd)
+target_link_libraries(openjphjs PRIVATE openjph)
+target_include_directories(
+  openjphjs
+  PRIVATE
+    ${PROJECT_SOURCE_DIR}/extern/openjph/src/core/openjph
+)
 target_compile_options(openjphjs PRIVATE -DOJPH_ENABLE_WASM_SIMD -msimd128)
 target_compile_features(openjphjs PUBLIC cxx_std_11)
 set_target_properties(
@@ -11,7 +16,7 @@ set_target_properties(
       -O3 \
       -s WASM=1 \
       --bind \
-      -s DISABLE_EXCEPTION_CATCHING=1 \
+      -s DISABLE_EXCEPTION_CATCHING=0 \
       -s ASSERTIONS=0 \
       -s MODULARIZE=1 \
       -s NO_EXIT_RUNTIME=1 \
