@@ -1,10 +1,10 @@
-name: Build & Publish @imageniobr/codec-openjph
+name: Build & Release codec-openjph (Imagenio fork)
 
 on:
   workflow_dispatch:
     inputs:
-      publish:
-        description: 'Publish to GitHub Packages npm (true/false)'
+      release:
+        description: 'Create GitHub Release with tarball (true/false)'
         required: false
         default: 'false'
   push:
@@ -12,12 +12,11 @@ on:
       - 'openjphjs-v*'
 
 permissions:
-  contents: read
-  packages: write
+  contents: write
 
 jobs:
   build:
-    name: Build WASM + publish package
+    name: Build WASM + release tarball
     runs-on: ubuntu-latest
 
     steps:
@@ -54,29 +53,39 @@ jobs:
           fi
           echo "OK: WASM artifact não tem refs a _setThrew nem invoke_* (patch aplicado corretamente)"
 
-      - name: Upload WASM artifacts
+      - name: npm pack (gera tarball)
+        working-directory: packages/openjphjs
+        run: |
+          # build.sh já rodou acima; remover prepublishOnly pra npm pack não re-buildar
+          npm pkg delete scripts.prepublishOnly
+          TARBALL=$(npm pack --silent)
+          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+          echo "Gerado: $TARBALL"
+          tar -tzf "$TARBALL" | head -20
+
+      - name: Upload tarball as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: openjphjs-wasm
-          path: |
-            packages/openjphjs/dist/openjphjs.js
-            packages/openjphjs/dist/openjphjs.wasm
+          name: codec-openjph-tarball
+          path: packages/openjphjs/${{ env.TARBALL }}
           retention-days: 30
 
-      - name: Setup Node.js for npm publish
-        if: github.event_name == 'push' || inputs.publish == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@imageniobr'
-
-      - name: Publish to GitHub Packages
-        if: github.event_name == 'push' || inputs.publish == 'true'
-        working-directory: packages/openjphjs
+      - name: Create GitHub Release with tarball asset
+        if: startsWith(github.ref, 'refs/tags/') || inputs.release == 'true'
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        working-directory: packages/openjphjs
         run: |
-          # build.sh já rodou acima; substituir o prepublishOnly pra não re-buildar
-          npm pkg delete scripts.prepublishOnly
-          npm publish
+          # Em workflow_dispatch (sem tag), usa a versão do package.json como tag.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER=$(node -p "require('./package.json').version")
+            TAG="openjphjs-v${VER}"
+          fi
+          echo "Release tag: $TAG"
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
+            && gh release upload "$TAG" "$TARBALL" --repo "$GITHUB_REPOSITORY" --clobber \
+            || gh release create "$TAG" "$TARBALL" \
+                 --repo "$GITHUB_REPOSITORY" \
+                 --title "codec-openjph $TAG" \
+                 --notes "Build Imagenio do @cornerstonejs/codec-openjph com patch -fwasm-exceptions (resolve _setThrew is not defined). Release tarball instalável via npm sem auth: \`npm install <url-deste-asset>\`. Smoke check de ausência de _setThrew/invoke_* passou no CI."
