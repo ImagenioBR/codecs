@@ -1,10 +1,11 @@
 {
-  "name": "@cornerstonejs/codec-openjph",
-  "version": "2.4.7",
-  "description": "JS/WebAssembly build of OpenJPH",
+  "name": "@imageniobr/codec-openjph",
+  "version": "2.4.7-imagenio.1",
+  "description": "JS/WebAssembly build of OpenJPH (Imagenio fork: -fwasm-exceptions patch)",
   "main": "dist/openjphjs.js",
   "publishConfig": {
-    "access": "public"
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
   },
   "directories": {
     "test": "test"
@@ -37,12 +38,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cornerstonejs/codecs.git"
+    "url": "git+https://github.com/ImagenioBR/codecs.git",
+    "directory": "packages/openjphjs"
   },
-  "author": "CornerstoneJS (original Chris Hafey)",
+  "author": "ImagenioBR (fork de cornerstonejs/codecs by Chris Hafey)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chafey/openjphjs/issues"
+    "url": "https://github.com/ImagenioBR/codecs/issues"
   },
-  "homepage": "https://github.com/chafey/openjphjs#readme"
+  "homepage": "https://github.com/ImagenioBR/codecs/tree/main/packages/openjphjs#readme"
 }

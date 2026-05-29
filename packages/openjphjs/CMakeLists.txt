@@ -20,7 +20,11 @@ endif()
 
 option(BUILD_SHARED_LIBS "" OFF)
 
-SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fexceptions")
+# Imagenio fork: -fwasm-exceptions necessario pra evitar `_setThrew is not defined`
+# em runtime. Upstream usa -fexceptions sem suporte WASM nativo correspondente, o
+# que faz exceptions C++ propagarem ReferenceError ao JS glue. Ver:
+# https://github.com/ImagenioBR/codecs/tree/main/packages/openjphjs#imagenio-patch
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fwasm-exceptions")
 
 # add the external library
 add_subdirectory(extern/openjph EXCLUDE_FROM_ALL)

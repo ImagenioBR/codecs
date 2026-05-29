@@ -1,0 +1,82 @@
+name: Build & Publish @imageniobr/codec-openjph
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to GitHub Packages npm (true/false)'
+        required: false
+        default: 'false'
+  push:
+    tags:
+      - 'openjphjs-v*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build WASM + publish package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+
+      - name: Verify emcc
+        run: emcc --version
+
+      - name: Build openjphjs
+        working-directory: packages/openjphjs
+        run: |
+          bash build.sh
+          ls -la build/src/openjphjs.js build/src/openjphjs.wasm
+          ls -la dist/openjphjs.js dist/openjphjs.wasm
+
+      - name: Smoke check WASM artifact has -fwasm-exceptions support
+        working-directory: packages/openjphjs
+        run: |
+          if grep -q '_setThrew' dist/openjphjs.js; then
+            echo "ERRO: dist/openjphjs.js contém referência a _setThrew — patch -fwasm-exceptions não foi aplicado"
+            exit 1
+          fi
+          if grep -q 'invoke_' dist/openjphjs.js; then
+            echo "ERRO: dist/openjphjs.js contém referência a invoke_* — patch -fwasm-exceptions não foi aplicado"
+            exit 1
+          fi
+          echo "OK: WASM artifact não tem refs a _setThrew nem invoke_* (patch aplicado corretamente)"
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openjphjs-wasm
+          path: |
+            packages/openjphjs/dist/openjphjs.js
+            packages/openjphjs/dist/openjphjs.wasm
+          retention-days: 30
+
+      - name: Setup Node.js for npm publish
+        if: github.event_name == 'push' || inputs.publish == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@imageniobr'
+
+      - name: Publish to GitHub Packages
+        if: github.event_name == 'push' || inputs.publish == 'true'
+        working-directory: packages/openjphjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # build.sh já rodou acima; substituir o prepublishOnly pra não re-buildar
+          npm pkg delete scripts.prepublishOnly
+          npm publish
